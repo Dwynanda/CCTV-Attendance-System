@@ -42,17 +42,6 @@ sudo apt install mariadb-server -y
 sudo systemctl enable mariadb
 sudo systemctl start mariadb
 
-
--- Membuat user database
-CREATE USER IF NOT EXISTS 'python'@'localhost'
-IDENTIFIED BY 'python';
-
--- Memberikan hak akses ke database
-GRANT ALL PRIVILEGES ON attendance_cctv.*
-TO 'python'@'localhost';
-
-FLUSH PRIVILEGES;
-
 # =====================================
 # 5. INSTAL PHP DAN DEPENDENSI LARAVEL
 # =====================================
