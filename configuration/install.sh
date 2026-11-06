@@ -45,20 +45,35 @@ sudo systemctl start mariadb
 # =====================================
 # 5. INSTAL PHP DAN DEPENDENSI LARAVEL
 # =====================================
-echo "Menginstal PHP dan Composer..."
+echo "Menginstal PHP 8.4 dan Composer..."
 
+# Menambahkan repository PHP
+sudo apt install -y software-properties-common
+
+sudo add-apt-repository -y ppa:ondrej/php
+
+sudo apt update
+
+# Menginstal PHP 8.4 dan extension Laravel
 sudo apt install -y \
-    php \
-    php-cli \
-    php-mbstring \
-    php-xml \
-    php-curl \
-    php-zip \
-    php-mysql \
-    php-bcmath \
+    php8.4 \
+    php8.4-cli \
+    php8.4-mbstring \
+    php8.4-xml \
+    php8.4-curl \
+    php8.4-zip \
+    php8.4-mysql \
+    php8.4-bcmath \
+    php8.4-sqlite3 \
     unzip \
     curl \
     composer
+
+# Mengatur PHP 8.4 sebagai default
+sudo update-alternatives --set php /usr/bin/php8.4
+
+echo "Versi PHP yang digunakan:"
+php -v
 
 # =====================================
 # 6. SETUP PYTHON
