@@ -13,7 +13,7 @@
         </div>
 
         <div class="card-body text-center">
-            <img src="http://127.0.0.1:5000/video"
+            <img src="http://IP_Server:5000/video"
                 class="img-fluid rounded"
                 style="width: 100%; max-width: 600px; height: auto;"
                 alt="Live CCTV">

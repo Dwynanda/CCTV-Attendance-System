@@ -11,7 +11,7 @@ import threading
 from datetime import datetime, time as waktu_now
 from flask import Flask, Response
 
-cctv = "./python/footage_training/person_incoming2.mkv" #  <-- IP CCTV
+cctv = "IP_CCTV" #  <-- IP CCTV
 kamera = cv2.VideoCapture(cctv, cv2.CAP_FFMPEG)
 face_model = YOLO("./python/model/yolo11n-face.pt") #  <-- "yolo11n-face.pt" adalah model khusus deteksi wajah
 # person_model = YOLO("./python/model/yolo11n.pt") # <-- model yang difungsikan untuk deteksi objek/manusia
