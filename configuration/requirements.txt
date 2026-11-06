@@ -1,0 +1,5 @@
+opencv-python
+ultralytics
+face-recognition
+mysql-connector-python
+Flask
