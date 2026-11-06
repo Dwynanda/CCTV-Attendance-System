@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 set -e
@@ -15,10 +16,10 @@ sudo apt upgrade -y
 # =====================================
 echo "Menginstal Git..."
 
-sudo apt install git -y
+sudo apt install -y git
 
 # =====================================
-# 3. INSTAL PYTHON
+# 3. INSTAL PYTHON DAN TOOLS PENDUKUNG
 # =====================================
 echo "Menginstal Python dan dependensinya..."
 
@@ -27,34 +28,40 @@ sudo apt install -y \
     python3-pip \
     python3-venv \
     python3-dev \
+    python3-setuptools \
+    python3-wheel \
     build-essential \
     cmake \
+    pkg-config \
     libopenblas-dev \
-    liblapack-dev
+    liblapack-dev \
+    libgl1 \
+    libglib2.0-0 \
+    libgtk-3-dev \
+    libx11-dev \
+    ffmpeg
 
 # =====================================
 # 4. INSTAL MARIADB
 # =====================================
 echo "Menginstal MariaDB..."
 
-sudo apt install mariadb-server -y
+sudo apt install -y mariadb-server
 
 sudo systemctl enable mariadb
 sudo systemctl start mariadb
 
 # =====================================
-# 5. INSTAL PHP DAN DEPENDENSI LARAVEL
+# 5. INSTAL PHP DAN COMPOSER
 # =====================================
 echo "Menginstal PHP 8.4 dan Composer..."
 
-# Menambahkan repository PHP
 sudo apt install -y software-properties-common
 
 sudo add-apt-repository -y ppa:ondrej/php
 
 sudo apt update
 
-# Menginstal PHP 8.4 dan extension Laravel
 sudo apt install -y \
     php8.4 \
     php8.4-cli \
@@ -85,6 +92,14 @@ python3 -m venv venv
 source venv/bin/activate
 
 pip install --upgrade pip
+
+# Setuptools versi khusus untuk menghindari error pkg_resources
+pip install setuptools==80.9.0
+
+# Instal dlib
+pip install dlib
+
+# Instal library Python lainnya
 pip install -r configuration/requirements.txt
 
 deactivate

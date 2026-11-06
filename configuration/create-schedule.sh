@@ -1,4 +1,6 @@
+
 #!/bin/bash
+
 set -e
 
 echo "Membuat jadwal otomatis CCTV Attendance..."
@@ -10,7 +12,7 @@ Description=Start CCTV Attendance
 
 [Service]
 Type=oneshot
-ExecStart=/bin/systemctl start cctv-attendance.service
+ExecStart=/bin/systemctl start cctv-python.service cctv-laravel.service
 EOF
 
 # Service untuk menghentikan CCTV Attendance
@@ -20,31 +22,29 @@ Description=Stop CCTV Attendance
 
 [Service]
 Type=oneshot
-ExecStart=/bin/systemctl stop cctv-attendance.service
+ExecStart=/bin/systemctl stop cctv-python.service cctv-laravel.service
 EOF
 
-# Timer mulai
+# Timer mulai pukul 08.00
 sudo tee /etc/systemd/system/cctv-start.timer > /dev/null <<'EOF'
 [Unit]
 Description=Schedule CCTV Attendance Start
 
 [Timer]
-OnCalendar=Mon..Fri *-*-* 09:00:00
-OnCalendar=Mon..Fri *-*-* 17:00:00
+OnCalendar=Mon..Fri *-*-* 08:00:00 # <-- Mulai sistem
 Unit=cctv-start.service
 
 [Install]
 WantedBy=timers.target
 EOF
 
-# Timer berhenti
+# Timer berhenti pukul 19.00
 sudo tee /etc/systemd/system/cctv-stop.timer > /dev/null <<'EOF'
 [Unit]
 Description=Schedule CCTV Attendance Stop
 
 [Timer]
-OnCalendar=Mon..Fri *-*-* 12:00:00
-OnCalendar=Mon..Fri *-*-* 19:00:00
+OnCalendar=Mon..Fri *-*-* 19:00:00 # <-- Matikan Sistem
 Unit=cctv-stop.service
 
 [Install]

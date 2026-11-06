@@ -6,10 +6,10 @@ import glob
 import os
 import mysql.connector
 import pickle
-from datetime import datetime
-from flask import Flask, Response
 import threading
+
 from datetime import datetime, time as waktu_now
+from flask import Flask, Response
 
 cctv = "./python/footage_training/person_incoming2.mkv" #  <-- IP CCTV
 kamera = cv2.VideoCapture(cctv, cv2.CAP_FFMPEG)
@@ -132,7 +132,11 @@ def process_cctv():
 
         ret, frame = kamera.read()
         if not ret or frame is None:
-            break
+            print("CCTV terputus, mencoba menghubungkan kembali...")
+            kamera.release()
+            time.sleep(2)
+            kamera.open(cctv, cv2.CAP_FFMPEG)
+            continue
 
         face = face_model.predict(frame, conf=0.25, verbose=False)
         for rectangle in face[0].boxes:

@@ -1,4 +1,3 @@
-import cv2
 import face_recognition
 import mysql.connector
 import pickle
@@ -11,8 +10,8 @@ nama = sys.argv[2]
 
 database = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="",
+    user="python",
+    password="python",
     database="attendance_cctv"
 )
 
