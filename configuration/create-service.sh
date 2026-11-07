@@ -2,7 +2,13 @@
 
 set -e
 
-PROJECT_DIR="/home/ubuntu/CCTV-Attendance-System"
+# =====================================
+# PATH PROJECT
+# =====================================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+VENV_DIR="$SCRIPT_DIR/venv"
+APP_USER="debian"
 
 echo "Membuat Python Service..."
 
@@ -14,10 +20,11 @@ Requires=mariadb.service
 
 [Service]
 Type=simple
-User=ubuntu
+User=$APP_USER
+Group=$APP_USER
 WorkingDirectory=$PROJECT_DIR
 
-ExecStart=$PROJECT_DIR/venv/bin/python python/realtime.py
+ExecStart=$VENV_DIR/bin/python $PROJECT_DIR/python/realtime.py
 
 Restart=always
 RestartSec=5
@@ -31,14 +38,15 @@ echo "Membuat Laravel Service..."
 cat > /etc/systemd/system/cctv-laravel.service <<EOF
 [Unit]
 Description=CCTV Attendance Laravel
-After=network.target
+After=network.target mariadb.service
 
 [Service]
 Type=simple
-User=ubuntu
+User=$APP_USER
+Group=$APP_USER
 WorkingDirectory=$PROJECT_DIR/laravel
 
-ExecStart=/usr/bin/php8.4 artisan serve --host=0.0.0.0 --port=8000
+ExecStart=/usr/bin/php artisan serve --host=0.0.0.0 --port=8000
 
 Restart=always
 RestartSec=5
@@ -47,9 +55,15 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 
+# =====================================
+# RELOAD DAN ENABLE SERVICE
+# =====================================
 systemctl daemon-reload
 
 systemctl enable cctv-python.service
 systemctl enable cctv-laravel.service
+
+systemctl restart cctv-python.service
+systemctl restart cctv-laravel.service
 
 echo "Python dan Laravel service berhasil dibuat!"
