@@ -128,15 +128,6 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
-php artisan key:generate
-
-# Atur permission Laravel
-cd laravel
-chown -R debian:debian storage bootstrap/cache
-
-chmod -R 775 storage bootstrap/cache
-cd ..
-
 # =====================================
 # SELESAI
 # =====================================
