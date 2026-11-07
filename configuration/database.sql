@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS absensi (
 -- 4. MEMBUAT USER DATABASE
 -- =====================================
 
-CREATE USER IF NOT EXISTS 'python'@'localhost'
+ALTER 'python'@'localhost'
 IDENTIFIED BY 'python';
 
 

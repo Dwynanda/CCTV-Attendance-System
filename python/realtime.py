@@ -11,10 +11,9 @@ import threading
 from datetime import datetime, time as waktu_now
 from flask import Flask, Response
 
-cctv = "IP_CCTV" #  <-- IP CCTV
+cctv = "rtsp://admin:L2034E56@192.168.1.13:554/cam/realmonitor?channel=1&subtype=0" #  <-- IP CCTV
 kamera = cv2.VideoCapture(cctv, cv2.CAP_FFMPEG)
-face_model = YOLO("./python/model/yolo11n-face.pt") #  <-- "yolo11n-face.pt" adalah model khusus deteksi wajah
-# person_model = YOLO("./python/model/yolo11n.pt") # <-- model yang difungsikan untuk deteksi objek/manusia
+face_model = YOLO("./python/model/yolo11n-face.pt")
 
 app = Flask(__name__)
 
@@ -138,7 +137,7 @@ def process_cctv():
             kamera.open(cctv, cv2.CAP_FFMPEG)
             continue
 
-        face = face_model.predict(frame, conf=0.25, verbose=False)
+        face = face_model.predict(frame, conf=0.5, verbose=False)
         for rectangle in face[0].boxes:
             kiri, atas, kanan, bawah = map(int, rectangle.xyxy[0].tolist())
             crop_face = frame[atas:bawah, kiri:kanan]

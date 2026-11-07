@@ -82,6 +82,12 @@ sudo update-alternatives --set php /usr/bin/php8.4
 echo "Versi PHP yang digunakan:"
 php -v
 
+# Atur permission folder
+cd laravel
+sudo chown -R ubuntu:ubuntu storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+cd ..
+
 # =====================================
 # 6. SETUP PYTHON
 # =====================================

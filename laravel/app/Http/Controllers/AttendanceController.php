@@ -61,9 +61,10 @@ class AttendanceController extends Controller
         $foto = $request->file('foto')->store('training');
         $lokasi_foto = Storage::path($foto);
 
+        $project_path = dirname(base_path());
         $process = new Process([
-            'python',
-            base_path('python/data_training.py'),
+            $project_path . '/venv/bin/python',
+            $project_path . '/python/data_training.py',
             $lokasi_foto,
             $request->name
             ], base_path(),['SYSTEMROOT' => getenv('SYSTEMROOT'), 'PATH' => getenv('PATH')
