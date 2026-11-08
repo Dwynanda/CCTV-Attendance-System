@@ -99,7 +99,6 @@ EOF
 # =====================================
 systemctl daemon-reload
 
-systemctl enable --now cctv-python.service
 systemctl enable --now cctv-laravel.service
 
 echo ""
