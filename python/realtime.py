@@ -119,76 +119,80 @@ def data_add(person_name, frame, status):
             present_pulang.add(person_name)
 
 
+
 def process_cctv():
     global output_frame, nomor, waktu
 
-    while True:
-        absen_masuk_start = waktu_now(9, 0)
-        absen_masuk_end = waktu_now(12, 0)
-        absen_pulang_start = waktu_now(17, 0)
-        absen_pulang_end = waktu_now(19, 0)
-        jam_now = datetime.now().time()
+    try:
+        while True:
+            absen_masuk_start = waktu_now(9, 0)
+            absen_masuk_end = waktu_now(12, 0)
+            absen_pulang_start = waktu_now(17, 0)
+            absen_pulang_end = waktu_now(19, 0)
+            jam_now = datetime.now().time()
 
-        ret, frame = kamera.read()
-        if not ret or frame is None:
-            print("CCTV terputus, mencoba menghubungkan kembali...")
-            kamera.release()
-            time.sleep(2)
-            kamera.open(cctv, cv2.CAP_FFMPEG)
-            continue
-
-        face = face_model.predict(frame, conf=0.5, verbose=False)
-        for rectangle in face[0].boxes:
-            kiri, atas, kanan, bawah = map(int, rectangle.xyxy[0].tolist())
-            crop_face = frame[atas:bawah, kiri:kanan]
-            if crop_face.size == 0:
+            ret, frame = kamera.read()
+            if not ret or frame is None:
+                print("CCTV terputus, mencoba menghubungkan kembali...")
+                kamera.release()
+                time.sleep(2)
+                kamera.open(cctv, cv2.CAP_FFMPEG)
                 continue
 
-            nomor += 1
-            cv2.imwrite(f"./python/faces/{nomor}.jpg", crop_face)
+            face = face_model.predict(frame, conf=0.5, verbose=False)
+            for rectangle in face[0].boxes:
+                kiri, atas, kanan, bawah = map(int, rectangle.xyxy[0].tolist())
+                crop_face = frame[atas:bawah, kiri:kanan]
+                if crop_face.size == 0:
+                    continue
 
-            if time.time() - waktu >= waktu_interval:
-                waktu = time.time()
+                nomor += 1
+                cv2.imwrite(f"./python/faces/{nomor}.jpg", crop_face)
 
-                if (absen_masuk_start <= jam_now <= absen_masuk_end or absen_pulang_start <= jam_now <= absen_pulang_end):
-                    img = face_recognition.load_image_file(f"./python/faces/{nomor}.jpg")
-                    encode = face_recognition.face_encodings(img)
-                    if absen_masuk_start <= jam_now <= absen_masuk_end:
-                        status = "absen_masuk"
-                    elif absen_pulang_start <= jam_now <= absen_pulang_end:
-                        status = "absen_pulang"
-                
-                    if len(encode) > 0:
-                        jarak = face_recognition.face_distance(encoded, encode[0])
+                if time.time() - waktu >= waktu_interval:
+                    waktu = time.time()
 
-                        if len(jarak) > 0:
-                            guessing_name = jarak.argmin()
+                    if (absen_masuk_start <= jam_now <= absen_masuk_end or absen_pulang_start <= jam_now <= absen_pulang_end):
+                        img = face_recognition.load_image_file(f"./python/faces/{nomor}.jpg")
+                        encode = face_recognition.face_encodings(img)
+                        if absen_masuk_start <= jam_now <= absen_masuk_end:
+                            status = "absen_masuk"
+                        elif absen_pulang_start <= jam_now <= absen_pulang_end:
+                            status = "absen_pulang"
 
-                            if jarak[guessing_name] < 0.5:
-                                person_name = personnamed[guessing_name]
-                                print(f"Wajah dikenali: {person_name}, jarak: {jarak[guessing_name]:.3f}")
-                                data_add(person_name, frame, status)
-                            
-                            else:
-                                person_name = "Unknown"
-                                data_add(person_name, frame, status)
-                                print(f"Wajah tidak dikenal, jarak terkecil: {jarak[guessing_name]:.3f}")
+                        if len(encode) > 0:
+                            jarak = face_recognition.face_distance(encoded, encode[0])
+
+                            if len(jarak) > 0:
+                                guessing_name = jarak.argmin()
+
+                                if jarak[guessing_name] < 0.5:
+                                    person_name = personnamed[guessing_name]
+                                    print(f"Wajah dikenali: {person_name}, jarak: {jarak[guessing_name]:.3f}")
+                                    data_add(person_name, frame, status)
+
+                                else:
+                                    person_name = "Unknown"
+                                    data_add(person_name, frame, status)
+                                    print(f"Wajah tidak dikenal, jarak terkecil: {jarak[guessing_name]:.3f}")
+                        else:
+                            continue
                     else:
-                        continue
-                else:
-                    print("Belum waktunya absen!")
+                        print("Belum waktunya absen!")
 
-        face_box = face[0].plot()
-        resize_win = cv2.resize(face_box, (900, 600))
-        output_frame = resize_win
+            face_box = face[0].plot()
+            resize_win = cv2.resize(face_box, (900, 600))
+            output_frame = resize_win
 
-    kamera.release()
-    for jpg in glob.glob("./python/faces/*"):
-        if os.path.isfile(jpg):
-            os.remove(jpg)
+    finally:
+        kamera.release()
 
-    cv2.destroyAllWindows()
+        for jpg in glob.glob("./python/faces/*.jpg"):
+            if os.path.isfile(jpg):
+                os.remove(jpg)
 
+        cv2.destroyAllWindows()
+        
 if __name__ == "__main__":
     threading.Thread(target=process_cctv, daemon=True).start()
     app.run(host="0.0.0.0", port=5000, threaded=True)
