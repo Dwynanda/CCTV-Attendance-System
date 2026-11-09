@@ -125,10 +125,10 @@ def process_cctv():
 
     try:
         while True:
-            absen_masuk_start = waktu_now(9, 0)
-            absen_masuk_end = waktu_now(12, 0)
-            absen_pulang_start = waktu_now(17, 0)
-            absen_pulang_end = waktu_now(19, 0)
+            absen_masuk_start = waktu_now(9, 0)     # <-- Start waktu deteksi absen masuk
+            absen_masuk_end = waktu_now(12, 0)      # <-- Waktu deteksi deteksi absen masuk berhenti
+            absen_pulang_start = waktu_now(17, 0)   # <-- Start waktu deteksi absen pulang
+            absen_pulang_end = waktu_now(19, 0)     # <-- Waktu deteksi deteksi absen pulang berhenti
             jam_now = datetime.now().time()
 
             ret, frame = kamera.read()
